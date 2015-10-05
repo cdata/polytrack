@@ -1,0 +1,84 @@
+<link rel="import" href="story-columns.html">
+<link rel="import" href="story-editor.html">
+<dom-module id="scrum-board">
+  <style>
+    :host {
+      @apply(--layout);
+      @apply(--layout-flex-auto);
+    }
+    neon-animated-pages {
+      width: 100%;
+    }
+
+    story-editor {
+      max-width: 1024px;
+      margin: auto;
+    }
+  </style>
+  <template>
+    <carbon-router
+      route="{{route}}"
+      matches="scrumboard/:section"
+      section="{{section}}"
+      subroute="{{storyId}}">
+    </carbon-router>
+    <neon-animated-pages
+      id="scrumboard"
+      selected="[[section]]"
+      attr-for-selected="id">
+      <story-columns
+        id="stories"
+        firebase-name="[[firebaseName]]"
+        user-auth="[[userAuth]]"
+        on-edit-story="_onEditStory"></story-columns>
+      <story-editor
+        id="editor"
+        firebase-name="[[firebaseName]]"
+        story-id="[[storyId]]">
+      </story-editor>
+    </neon-animated-pages>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'scrum-board',
+
+  properties: {
+    firebaseName: {
+      type: String,
+      value: 'polytrack'
+    },
+
+    userAuth: {
+      type: Object
+    },
+
+    editingStoryId: {
+      type: String,
+      notify: true
+    },
+
+    section: {
+      type: String,
+      value: 'stories',
+      notify: true
+    }
+  },
+
+  listeners: {
+    'editing-complete': 'stopEditing'
+  },
+
+  edit: function(storyId) {
+    this.route = 'scrumboard/editor/' + storyId;
+  },
+
+  stopEditing: function() {
+    this.route = 'scrumboard/stories';
+  },
+
+  _onEditStory: function(event) {
+    this.edit(event.detail.story);
+  }
+});
+</script>

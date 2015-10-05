@@ -1,0 +1,132 @@
+<link rel="import" href="story-card.html">
+
+<dom-module id="story-column">
+  <style>
+    :host {
+      display: block;
+      position: relative;
+      padding: 0 1em;
+      overflow: auto;
+    }
+
+    #dropIndicator {
+      display: none;
+      position: relative;
+      box-sizing: border-box;
+      margin-bottom: 1em;
+      border-radius: 2px;
+      height: 30px;
+      background-color: var(--paper-light-blue-100);
+      border: 1px solid var(--paper-light-blue-a200);
+    }
+
+    :host([drop-candidate]) #dropIndicator {
+      display: block;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: normal;
+      font-style: italic;
+      text-align: center;
+      color: var(--paper-grey-600);
+    }
+
+    story-card {
+      max-height: 300px;
+    }
+  </style>
+  <template>
+    <firebase-collection
+      data="{{cards}}"
+      location="[[_columnCardLocation(firebaseName, userAuth, column)]]"
+      order-by-child="index"
+      order-value-type="number" log>
+    </firebase-collection>
+    <h2>[[column.name]]</h2>
+    <section id="content">
+      <div id="dropIndicator"></div>
+      <template is="dom-repeat" items="{{cards}}" as="card">
+        <story-card
+          card="{{card}}"
+          firebase-name="[[firebaseName]]"
+          disable-text-selection="[[movingCard]]">
+        </story-card>
+      </template>
+    </section>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'story-column',
+
+    properties: {
+      column: {
+        type: Object
+      },
+
+      userAuth: {
+        type: Object
+      },
+
+      firebaseName: {
+        type: String
+      },
+
+      cards: {
+        type: Array
+      },
+
+      movingCard: {
+        type: Boolean,
+        value: false
+      },
+
+      dropCandidate: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
+      }
+    },
+
+    observers: [
+      '_dropStateChanged(movingCard, dropCandidate)'
+    ],
+
+    get firstCard() {
+      return Polymer.dom(this.root).querySelector('story-card');
+    },
+
+    removeCard: function(card) {
+      if (this.cards.indexOf(card) === -1) {
+        throw new Error('Failed to remove card from old column!');
+      }
+
+      this.splice('cards', this.cards.indexOf(card), 1);
+    },
+
+    addCard: function(card) {
+      this.unshift('cards', card);
+    },
+
+    _columnCardLocation: function(firebaseName, userAuth, column) {
+      return 'https://' + firebaseName + '.firebaseio.com/scrumboard/' + userAuth.uid + '/columns/' + column.__firebaseKey__ + '/cards';
+    },
+
+    _dropStateChanged: function(movingCard, dropCandidate) {
+      if (movingCard && !dropCandidate) {
+        this.listen(this, 'mousemove', '_onPointerMove');
+        this.listen(this, 'touchmove', '_onPointerMove');
+      } else {
+        this.unlisten(this, 'mousemove', '_onPointerMove');
+        this.unlisten(this, 'touchmove', '_onPointerMove');
+      }
+    },
+
+    _onPointerMove: function(event) {
+      if (!this.dropCandidate) {
+        this.fire('column-track', this);
+      }
+    }
+  });
+</script>
