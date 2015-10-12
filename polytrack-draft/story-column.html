@@ -41,7 +41,7 @@
       data="{{cards}}"
       location="[[_columnCardLocation(firebaseName, userAuth, column)]]"
       order-by-child="index"
-      order-value-type="number" log>
+      order-value-type="number">
     </firebase-collection>
     <h2>[[column.name]]</h2>
     <section id="content">
@@ -105,8 +105,39 @@
       this.splice('cards', this.cards.indexOf(card), 1);
     },
 
-    addCard: function(card) {
-      this.unshift('cards', card);
+    addCard: function(card, previousCard) {
+      if (previousCard) {
+        var offset = 0;
+        var cardIndex = 0;
+
+        this.cards.forEach(function(card, index) {
+          this.set('cards.' + index + '.index', index + offset);
+
+          if (card.__firebaseKey__ === previousCard.__firebaseKey__) {
+            cardIndex = index + 1;
+            offset++;
+          }
+        }, this);
+
+        console.log('### Adding card to', cardIndex);
+        this.splice('cards', cardIndex, 0, card);
+      } else {
+        card.index = 0;
+
+        this.cards.forEach(function(card, index) {
+          this.set('cards.' + index + '.index', index + 1);
+        }, this);
+
+        this.unshift('cards', card);
+      }
+    },
+
+    highlightCandidate: function(card) {
+      if (card) {
+        this.$.content.insertBefore(this.$.dropIndicator, Polymer.dom(card).nextElementSibling);
+      } else {
+        this.$.content.insertBefore(this.$.dropIndicator, Polymer.dom(this.$.content).firstElementChild);
+      }
     },
 
     _columnCardLocation: function(firebaseName, userAuth, column) {

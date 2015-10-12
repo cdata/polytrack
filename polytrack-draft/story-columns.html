@@ -133,8 +133,9 @@ Polymer({
 
   created: function() {
     this._startingColumn = null;
-    this._trackingColumn = null;
     this._trackingCard = null;
+    this._trackingColumn = null;
+    this._trackingColumnCard = null;
     this._trackingCardX = 0;
     this._trackingCardY = 0;
   },
@@ -196,10 +197,6 @@ Polymer({
   _onColumnTrack: function(event) {
     var column = event.detail;
 
-    if (!this._startingColumn) {
-      this._startingColumn = column;
-    }
-
     if (this._trackingColumn && this._trackingColumn !== column) {
       this._trackingColumn.dropCandidate = false;
     }
@@ -213,6 +210,7 @@ Polymer({
       var card = this._trackedCard(event);
 
       if (card) {
+        this._startingColumn = Polymer.dom(card).getOwnerRoot().host;
         this._trackingCard = card.selected && card;
       }
     }
@@ -247,6 +245,18 @@ Polymer({
     this.$.cardProxy.style.transform =
       'translate(' + this._trackingCardX + 'px, ' + this._trackingCardY + 'px)';
 
+    if (this._trackingColumn) {
+      this._trackingColumnCard = this._trackedCard(event.detail.sourceEvent);
+
+      if (this._trackingColumnCard === this._trackingCard) {
+        this._trackingColumnCard = null;
+      }
+
+      this._trackingColumn.highlightCandidate(this._trackingColumnCard);
+    } else {
+      this._trackingColumnCard = null;
+    }
+
     if (event.detail.state === 'end') {
       this.$.cardProxy.selected = false;
       this.$.cardProxy.style.opacity = 0;
@@ -259,11 +269,12 @@ Polymer({
 
       if (this._startingColumn !== this._trackingColumn) {
         this._startingColumn.removeCard(this._trackingCard.card);
-        this._trackingColumn.addCard(this._trackingCard.card);
-        //this.swapCardColumns(this._trackingCard.card, this._trackingColumn.column, this._startingColumn.column);
+        this._trackingColumn.addCard(this._trackingCard.card, this._trackingColumnCard && this._trackingColumnCard.card);
       }
 
       this._startingColumn = null;
+      this._trackingCard = null;
+      this._trackingColumnCard = null;
     }
   }
 });
