@@ -1,0 +1,70 @@
+<link rel="import" href="../polytrack-element-behavior.html">
+<link rel="import" href="../droppable-behavior.html">
+<link rel="import" href="story-card.html">
+<dom-module id="story-column">
+  <style>
+    :host {
+      display: block;
+      position: relative;
+      padding: 0 1em;
+      overflow: auto;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: normal;
+      font-style: italic;
+      text-align: center;
+      color: var(--paper-grey-600);
+    }
+
+    story-card {
+      max-height: 300px;
+    }
+  </style>
+  <template>
+    <firebase-document
+      id="firebase"
+      location="[[_columnLocation(firebaseRoutes, columnId)]]"
+      data="{{column}}">
+    </firebase-document>
+    <h1>[[column.name]]</h1>
+    <template is="dom-repeat" items="[[column.cards]]" as="cardId">
+      <story-card
+        card-id="[[cardId]]"
+        firebase-routes="[[firebaseRoutes]]"
+        user-auth="[[userAuth]]">
+      </story-card>
+    </template>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'story-column',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior,
+    Polymer.DroppableBehavior
+  ],
+
+  properties: {
+    columnId: {
+      type: String,
+      notify: true
+    },
+
+    column: {
+      type: Object,
+      notify: true
+    }
+  },
+
+  get firstCard() {
+    return Polymer.dom(this.root).querySelector('story-card');
+  },
+
+  _columnLocation: function(firebaseRoutes, columnId) {
+    return firebaseRoutes.columnLocation(columnId);
+  }
+});
+</script>

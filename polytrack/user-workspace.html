@@ -1,0 +1,92 @@
+<link rel="import" href="polytrack-element-behavior.html">
+<link rel="import" href="user-workspace/story-columns.html">
+<link rel="import" href="user-workspace/story-editor.html">
+<dom-module id="user-workspace">
+  <style>
+    :host {
+      @apply(--layout-fit);
+    }
+
+    neon-animated-pages {
+      @apply(--layout-fit);
+    }
+  </style>
+  <template>
+    <firebase-document
+      id="firebase"
+      location="[[_workspaceLocation(firebaseRoutes, userAuth)]]"
+      data="{{workspace}}">
+    </firebase-document>
+    <carbon-route
+      route="{{route}}"
+      matches=":page"
+      page="{{page}}"
+      subroute="{{cardId}}">
+    </carbon-route>
+    <neon-animated-pages attr-for-selected="id" selected="[[page]]">
+      <story-columns
+        id="board"
+        column-ids="[[workspace.columns]]"
+        firebase-routes="[[firebaseRoutes]]"
+        user-auth="[[userAuth]]">
+      </story-columns>
+      <story-editor
+        id="edit"
+        card-id="[[cardId]]"
+        firebase-routes="[[firebaseRoutes]]"
+        user-auth="[[userAuth]]">
+      </story-editor>
+    </neon-animated-pages>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'user-workspace',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior
+  ],
+
+  properties: {
+    workspace: {
+      type: Object,
+      notify: true
+    },
+
+    route: {
+      type: String,
+      notify: true,
+      value: 'board'
+    },
+
+    page: {
+      type: String,
+      notify: true,
+      observer: '_pageChanged'
+    }
+  },
+
+  listeners: {
+    'edit-card': '_onEditCard',
+    'editing-finished': '_onEditingFinished'
+  },
+
+  _workspaceLocation: function(firebaseRoutes, userAuth) {
+    return firebaseRoutes.workspaceLocation(userAuth.uid);
+  },
+
+  _pageChanged: function(page) {
+    if (!(page in this.$)) {
+      this.route = 'board';
+    }
+  },
+
+  _onEditCard: function(event) {
+    this.route = 'edit/' + event.target.cardId;
+  },
+
+  _onEditingFinished: function(event) {
+    this.route = 'board';
+  }
+});
+</script>

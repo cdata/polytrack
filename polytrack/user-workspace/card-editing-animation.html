@@ -1,0 +1,40 @@
+<script>
+  Polymer({
+    is: 'card-editing-animation',
+
+    behaviors: [
+      Polymer.NeonSharedElementAnimationBehavior
+    ],
+
+    configure: function(config) {
+      var shared = this.findSharedElements(config);
+
+      if (!shared) {
+        return null;
+      }
+
+      var toRect = shared.to.getBoundingClientRect();
+      var fromRect = shared.from.getBoundingClientRect();
+
+      shared.from.style.opacity = 0;
+
+      this._effect = new KeyframeEffect(shared.to, [{
+        'transform': 'translate(' + (fromRect.left - toRect.left) + 'px, ' + (fromRect.top - toRect.top) + 'px)',
+        'width': fromRect.width + 'px',
+        'height': fromRect.height + 'px'
+      }, {
+        'transform': 'translate(0, 0)',
+        'width': toRect.width + 'px',
+        'height': toRect.height + 'px'
+      }], this.timingFromConfig(config));
+
+      return this._effect;
+    },
+
+    complete: function() {
+      if (this.sharedElements) {
+        this.sharedElements.from.style.opacity = 1;
+      }
+    }
+  });
+</script>

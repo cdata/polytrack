@@ -1,0 +1,15 @@
+<script>
+(function() {
+  'use strict';
+
+  Polymer.DroppableBehavior = {
+    listeners: {
+      'find-drop-candidates': '_onFindDropCandidates'
+    },
+
+    _onFindDropCandidates: function(event) {
+      event.detail.nominate(this);
+    }
+  };
+})();
+</script>

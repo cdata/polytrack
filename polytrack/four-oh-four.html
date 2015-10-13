@@ -1,0 +1,27 @@
+<dom-module id="four-oh-four">
+  <style>
+    :host {
+      display: none;
+      @apply(--layout-fit);
+
+      font-size: 8em;
+      color: #fff;
+      background-color: var(--paper-grey-300);
+    }
+
+    :host(.iron-selected) {
+      display: block;
+      @apply(--layout);
+      @apply(--layout-flex-auto);
+      @apply(--layout-center-center);
+    }
+  </style>
+  <template>
+    <h1>404</h1>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'four-oh-four'
+  });
+</script>

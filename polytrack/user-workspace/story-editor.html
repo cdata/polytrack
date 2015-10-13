@@ -1,0 +1,187 @@
+<link rel="import" href="../polytrack-element-behavior.html">
+<link rel="import" href="story-card.html">
+<dom-module id="story-editor">
+  <style>
+    :host {
+      @apply(--layout-fit);
+      box-sizing: border-box;
+      padding: 1em;
+    }
+
+    #input, #card {
+      position: absolute;
+      box-sizing: border-box;
+      top: 1em;
+      bottom: 1em;
+      padding: 1em;
+    }
+
+    #input {
+      left: 1em;
+      right: 50%;
+      margin-right: 0.5em;
+
+      background-color: #fff;
+      border-radius: 2px;
+      @apply(--shadow-elevation-2dp);
+    }
+
+    #card {
+      left: 50%;
+      right: 1em;
+      margin-left: 0.5em;
+      margin-bottom: 0;
+    }
+
+    iron-autogrow-textarea {
+      font-family: Menlo, Courier, monospace;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    paper-fab {
+      display: block;
+      position: absolute;
+      bottom: 2em;
+      right: 2em;
+      z-index: 1;
+    }
+  </style>
+  <template>
+    <div id="input">
+      <iron-autogrow-textarea
+        id="textarea"
+        bind-value="{{story.markdown}}">
+      </iron-autogrow-textarea>
+    </div>
+
+    <story-card
+      id="card"
+      firebase-routes="[[firebaseRoutes]]"
+      user-auth="[[userAuth]]"
+      card-id="[[_availableCardId(cardId, lastCardId)]]"
+      story="{{story}}"
+      dormant>
+    </story-card>
+
+    <paper-fab id="closeButton" icon="check" on-tap="close"></paper-fab>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'story-editor',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior,
+    Polymer.NeonSharedElementAnimatableBehavior
+  ],
+
+  properties: {
+    cardId: {
+      type: String,
+      notify: true,
+      observer: '_cardIdChanged'
+    },
+
+    lastCardId: {
+      type: String,
+      notify: true
+    },
+
+    story: {
+      type: Object,
+      notify: true
+    },
+
+    animationConfig: {
+      type: Object,
+      value: function() {
+        return {
+          'entry': [{
+            name: 'card-editing-animation',
+            id: 'card',
+            toPage: this
+          }, {
+            name: 'transform-animation',
+            node: this.$.input,
+            transformFrom: 'translateX(-10vw)',
+            transformTo: 'translateX(0vw)',
+            timing: {
+              delay: 150
+            }
+          }, {
+            name: 'fade-in-animation',
+            node: this.$.input,
+            timing: {
+              delay: 150
+            }
+          }, {
+            name: 'fade-in-animation',
+            node: this.$.closeButton,
+            timing: {
+              delay: 0
+            }
+          }],
+          'exit': [{
+            name: 'transform-animation',
+            node: this.$.input,
+            transformFrom: 'translateX(0vw)',
+            transformTo: 'translateX(-5vw)'
+          }, {
+            name: 'fade-out-animation',
+            node: this.$.input
+          }, {
+            name: 'transform-animation',
+            node: this.$.card,
+            transformFrom: 'translateX(0vw)',
+            transformTo: 'translateX(-5vw)',
+            timing: {
+              delay: 100
+            }
+          }, {
+            name: 'fade-out-animation',
+            node: this.$.card,
+            timing: {
+              delay: 100
+            }
+          }, {
+            name: 'fade-out-animation',
+            node: this.$.closeButton
+          }]
+        };
+      }
+    },
+
+    sharedElements: {
+      type: Object,
+      value: function() {
+        return {
+          'card': this.$.card
+        }
+      }
+    }
+  },
+
+  close: function() {
+    this.fire('editing-finished');
+  },
+
+  _cardIdChanged: function(cardId, oldCardId) {
+    if (cardId) {
+      this.$.textarea.focus();
+
+      if (!this.lastCardId) {
+        this.lastCardId = cardId;
+      }
+    } else {
+      this.lastCardId = oldCardId;
+    }
+  },
+
+  _availableCardId: function(cardId, lastCardId) {
+    return cardId || lastCardId;
+  }
+});
+</script>

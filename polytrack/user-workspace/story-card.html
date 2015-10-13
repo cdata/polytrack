@@ -1,0 +1,160 @@
+<link rel="import" href="../polytrack-element-behavior.html">
+<link rel="import" href="../polytrack-gestures-behavior.html">
+<link rel="import" href="../draggable-behavior.html">
+<link rel="import" href="../droppable-behavior.html">
+<dom-module id="story-card">
+  <style>
+    :host {
+      display: block;
+      position: relative;
+      box-sizing: border-box;
+      background-color: #fff;
+      padding: 0.5em;
+      margin-bottom: 1em;
+      border-radius: 2px;
+      overflow: hidden;
+
+      @apply(--shadow-elevation-2dp);
+      @apply(--shadow-transition);
+
+      -webkit-user-select: all;
+      -moz-user-select: all;
+      -ms-user-select: all;
+      user-select: all;
+    }
+
+    :host([scrollable]) {
+      overflow: auto;
+    }
+
+    :host([disable-text-selection]) {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    :host([selected]) {
+      @apply(--shadow-elevation-6dp);
+    }
+
+    #emptyLabel {
+      color: var(--paper-grey-400);
+      border: none;
+    }
+
+    .markdown-html h1, h2, h3, h4, h5, h6 {
+      margin: 0.25em 0;
+    }
+
+    .markdown-html h2, h3, h4 {
+      border-bottom: 1px solid var(--paper-grey-300);
+    }
+
+    .markdown-html img {
+      max-width: 100%;
+    }
+  </style>
+  <template>
+    <firebase-document
+      location="[[_cardLocation(firebaseRoutes, cardId)]]"
+      data="{{card}}">
+    </firebase-document>
+    <firebase-document
+      location="[[_storyLocation(firebaseRoutes, card.story)]]"
+      data="{{story}}">
+    </firebase-document>
+
+    <marked-element markdown="[[story.markdown]]">
+      <div class="markdown-html"></div>
+    </marked-element>
+    <template is="dom-if" if="[[!story.markdown]]">
+      <h4 id="emptyLabel">Empty card...</h4>
+    </template>
+
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'story-card',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior,
+    Polymer.PolytrackGesturesBehavior,
+    Polymer.DraggableBehavior,
+    Polymer.DroppableBehavior,
+    Polymer.IronControlState
+  ],
+
+  properties: {
+    cardId: {
+      type: String,
+      notify: true
+    },
+
+    card: {
+      type: Object,
+      notify: true
+    },
+
+    story: {
+      type: Object,
+      notify: true
+    },
+
+    selected: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    disableTextSelection: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    scrollable: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true
+    },
+
+    draggable: {
+      type: Boolean,
+      computed: '_computeDraggable(selected)'
+    }
+  },
+
+  listeners: {
+    'double-tap': 'edit',
+    'long-press': '_onLongPress',
+    'up': '_onUp'
+  },
+
+  edit: function() {
+    this.fire('edit-card');
+  },
+
+  _cardLocation: function(firebaseRoutes, cardId) {
+    return firebaseRoutes.cardLocation(cardId);
+  },
+
+  _storyLocation: function(firebaseRoutes, storyId) {
+    return firebaseRoutes.storyLocation(storyId);
+  },
+
+  _onLongPress: function() {
+    this.selected = true;
+  },
+
+  _onUp: function() {
+    Polymer.PolytrackGesturesBehavior._onUp.apply(this, arguments);
+    this.selected = false;
+  },
+
+  _computeDraggable: function(selected) {
+    return selected;
+  }
+});
+</script>

@@ -1,0 +1,149 @@
+<link rel="import" href="../polytrack-element-behavior.html">
+<link rel="import" href="card-editing-animation.html">
+<link rel="import" href="story-column.html">
+<dom-module id="story-columns">
+  <style>
+    :host {
+      width: 100%;
+      height: 100%;
+      @apply(--layout);
+      @apply(--layout-horizontal);
+      @apply(--layout-flex);
+
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    story-column {
+      flex: 1 0 0;
+    }
+
+    paper-fab {
+      display: block;
+      position: absolute;
+
+      bottom: 2em;
+      right: 2em;
+    }
+
+    story-card {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      opacity: 0;
+    }
+
+  </style>
+  <template>
+    <template is="dom-repeat" items="[[columnIds]]" as="columnId">
+      <story-column
+        column-id="[[columnId]]"
+        firebase-routes="[[firebaseRoutes]]"
+        user-auth="[[userAuth]]"
+        on-drop="_onDrop">
+      </story-column>
+    </template>
+
+    <paper-fab icon="create" on-tap="createBlankStory"></paper-fab>
+
+    <story-card
+      id="cardProxy"
+      firebase-name="[[firebaseName]]"
+      selected
+      disabled-text-selection
+      disabled>
+    </story-card>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'story-columns',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior,
+    Polymer.NeonSharedElementAnimatableBehavior
+  ],
+
+  properties: {
+    columnIds: {
+      type: Array,
+      notify: true
+    },
+
+    animationConfig: {
+      type: Object,
+      value: function() {
+        return {
+          'entry': [{
+            name: 'fade-in-animation',
+            node: this,
+            timing: {
+              delay: 150
+            }
+          }],
+          'exit': [{
+            name: 'card-editing-animation',
+            id: 'card',
+            fromPage: this
+          }, {
+            name: 'fade-out-animation',
+            node: this
+          }]
+        };
+      }
+    },
+
+    sharedElements: {
+      type: Object,
+      value: function() {
+        return {
+          'card': this
+        };
+      }
+    }
+  },
+
+  listeners: {
+    'edit-card': '_onEditCard'
+  },
+
+  get firstColumn () {
+    return Polymer.dom(this.root).querySelector('story-column');
+  },
+
+  createBlankStory: function() {
+    var stories = new Firebase(this.firebaseRoutes.storiesLocation());
+    var story = stories.push({
+      user: this.userAuth.uid,
+      markdown: ''
+    }).key();
+    var cards = new Firebase(this.firebaseRoutes.cardsLocation());
+    var card = cards.push({
+      user: this.userAuth.uid,
+      story: story
+    }).key();
+    var column = this.firstColumn;
+
+    if (column.column.cards) {
+      this.firstColumn.unshift('column.cards', card);
+    } else {
+      this.firstColumn.set('column.cards', [card]);
+    }
+
+    this.async(function() {
+      column.firstCard.edit();
+    });
+  },
+
+  _onDrop: function() {
+    console.log('DROP', event.detail.draggable, event.detail.dropCandidates);
+  },
+
+  _onEditCard: function(event) {
+    this.sharedElements.card = event.target || this;
+  }
+})
+</script>

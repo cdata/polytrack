@@ -1,0 +1,107 @@
+<script>
+(function() {
+  'use strict';
+
+  Polymer.DraggableBehavior = {
+    properties: {
+      dragging: {
+        type: Boolean,
+        value: false,
+        readOnly: true,
+        notify: true
+      },
+
+      draggable: {
+        type: Boolean,
+        value: false
+      },
+
+      dragX: {
+        type: Number,
+        readOnly: true,
+        value: 0
+      },
+
+      dragY: {
+        type: Number,
+        readOnly: true,
+        value: 0
+      },
+
+      dragOriginRect: {
+        type: Object,
+        readOnly: true,
+        value: null
+      }
+    },
+
+    listeners: {
+      track: '_onTrack'
+    },
+
+    _onTrack: function(event) {
+      var draggable = this;
+      var dropCandidates;
+
+      if (!this.dragging && !this.draggable) {
+        return;
+      }
+
+      if (event.detail.state === 'start') {
+        this._setDragging(true);
+        this._setDragOriginRect(this.getBoundingClientRect());
+
+        this.fire('drag-start');
+      }
+
+      this._setDragX(this.dragX + event.detail.ddx);
+      this._setDragY(this.dragY + event.detail.ddy);
+
+      dropCandidates = [];
+
+      Polymer.Base.fire.call(event.detail.hover(), 'find-drop-candidates', {
+        get draggable() {
+          return draggable;
+        },
+
+        nominate: function(node) {
+          dropCandidates.push(node);
+        }
+      });
+
+      this.fire('drag', {
+        get draggable () {
+          return draggable;
+        },
+
+        get dropCandidates () {
+          return dropCandidates;
+        }
+      });
+
+      if (event.detail.state === 'end') {
+        this._setDragging(false);
+
+        dropCandidates.forEach(function(candidate) {
+          Polymer.Base.fire.call(candidate, 'drop', {
+            get draggable() {
+              return draggable;
+            },
+
+            get dropCandidates() {
+              return dropCandidates;
+            }
+          }, {
+            bubbles: false
+          });
+        });
+
+        this.fire('drag-end');
+
+        this._setDragX(0);
+        this._setDragY(0);
+      }
+    }
+  };
+})();
+</script>

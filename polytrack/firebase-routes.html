@@ -1,0 +1,53 @@
+<script>
+(function() {
+  'use strict';
+
+  function FirebaseRoutes(firebaseName) {
+    this.firebaseName = firebaseName;
+  }
+
+  FirebaseRoutes.prototype = {
+    get host() {
+      return 'https://' + this.firebaseName + '.firebaseio.com/v1';
+    },
+
+    workspaceLocation: function(userId) {
+      return this.host + '/workspaces/' + userId;
+    },
+
+    storiesLocation: function() {
+      return this.host + '/stories';
+    },
+
+    storyLocation: function(storyId) {
+      return this.storiesLocation() + '/' + storyId;
+    },
+
+    cardsLocation: function() {
+      return this.host + '/cards';
+    },
+
+    cardLocation: function(cardId) {
+      return this.cardsLocation() + '/' + cardId;
+    },
+
+    columnsLocation: function() {
+      return this.host + '/columns';
+    },
+
+    columnLocation: function(columnId) {
+      return this.columnsLocation() + '/' + columnId;
+    },
+
+    workspaceColumnsLocation: function(userId) {
+      return this.workspaceLocation(userId) + '/columns';
+    },
+
+    columnCardsLocation: function(columnId) {
+      return this.columnLocation(columnId) + '/cards';
+    }
+  };
+
+  window.FirebaseRoutes = FirebaseRoutes;
+})();
+</script>

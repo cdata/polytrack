@@ -1,0 +1,58 @@
+<script>
+Polymer.PolytrackGesturesBehavior = {
+  created: function() {
+    this._awaitingLongPress = null;
+    this._awaitingDoubleTap = null;
+  },
+
+  listeners: {
+    'tap': '_onTap',
+    'down': '_onDown',
+    'up': '_onUp',
+    'track': '_onTrack'
+  },
+
+  _onDown: function(event) {
+    if (this._awaitingLongPress != null) {
+      this.cancelAsync(this._awaitingLongPress);
+    }
+
+    this._awaitingLongPress = this.async(function() {
+      this.fire('long-press', {
+        sourceEvent: event
+      });
+    }, 200);
+  },
+
+  _onUp: function() {
+    if (this._awaitingLongPress != null) {
+      this.cancelAsync(this._awaitingLongPress);
+    }
+  },
+
+  _onTap: function(event) {
+    if (this.dormant) {
+      return;
+    }
+
+    if (this._awaitingDoubleTap != null) {
+      this.cancelAsync(this._awaitingDoubleTap);
+      this._awaitingDoubleTap = null;
+
+      this.fire('double-tap', {
+        sourceEvent: event
+      });
+    } else {
+      this._awaitingDoubleTap = this.async(function() {
+        this._awaitingDoubleTap = null;
+      }, 300);
+    }
+  },
+
+  _onTrack: function() {
+    if (this._awaitingLongPress != null) {
+      this.cancelAsync(this._awaitingLongPress);
+    }
+  },
+};
+</script>

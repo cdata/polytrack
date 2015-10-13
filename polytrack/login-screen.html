@@ -1,0 +1,90 @@
+<link rel="import" href="polytrack-element-behavior.html">
+<dom-module id="login-screen">
+  <style>
+    :host {
+      display: block;
+      transition:
+        opacity 0.3s cubic-bezier(.3,.95,.5,1);
+      background-color: var(--paper-grey-600);
+      opacity: 0;
+      z-index: 1000;
+      pointer-events: none;
+
+      @apply(--layout);
+      @apply(--layout-fit);
+      @apply(--layout-flex-auto);
+      @apply(--layout-center-center);
+    }
+
+    :host(.iron-selected) {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    paper-button {
+      color: var(--paper-grey-800);
+      background-color: #fff;
+      font-size: 20px;
+    }
+
+    paper-button > * {
+      vertical-align: middle;
+    }
+  </style>
+  <template>
+    <firebase-auth
+      id="auth"
+      location="[[_authLocation(firebaseRoutes)]]"
+      user="{{userAuth}}"
+      provider="github"
+      on-user-created="_onUserCreated"
+      on-error="_onAuthError">
+    </firebase-auth>
+    <paper-button on-tap="_attemptLogin">
+      <iron-icon size="16" src="../images/github.svg"></iron-icon>
+      <span>Login</span>
+    </paper-button>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'login-screen',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior
+  ],
+
+  initializeUserData: function() {
+    var userId = this.userAuth.uid;
+    var workspace = new Firebase(this.firebaseRoutes.workspaceLocation(userId));
+    var columns = new Firebase(this.firebaseRoutes.columnsLocation());
+
+    ['Icebox', 'Backlog', 'Active', 'Pending', 'Finished'].forEach(function(name, index) {
+      var column = columns.push({
+        name: name,
+        cards: null,
+        user: userId
+      });
+
+      workspace.child('columns').child(index).set(column.key());
+    });
+  },
+
+  _attemptLogin: function() {
+    console.log('ATTEMPT')
+    this.$.auth.login();
+  },
+
+  _onUserCreated: function() {
+    this._initializeUserData();
+  },
+
+  _authLocation: function(firebaseRoutes) {
+    return firebaseRoutes.host;
+  },
+
+  _onAuthError: function() {
+    console.log('Auth error!');
+  }
+});
+</script>

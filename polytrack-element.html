@@ -1,0 +1,105 @@
+<link rel="import" href="components.html">
+<link rel="import" href="polytrack/firebase-routes.html">
+<link rel="import" href="polytrack/polytrack-element-behavior.html">
+<link rel="import" href="polytrack/four-oh-four.html">
+<link rel="import" href="polytrack/login-screen.html">
+<link rel="import" href="polytrack/user-workspace.html">
+
+<dom-module id="polytrack-element">
+  <style>
+    :host {
+      display: block;
+      @apply(--layout-fit);
+      background-color: var(--paper-grey-300);
+      @apply(--paper-font-common-base);
+    }
+  </style>
+  <template>
+    <carbon-router
+      route="{{route}}"
+      matches=":page"
+      page="{{page}}"
+      subroute="{{subroute}}">
+    </carbon-router>
+    <iron-pages id="pages" attr-for-selected="id" selected="[[page]]">
+      <login-screen
+        id="login"
+        firebase-routes="[[firebaseRoutes]]"
+        user-auth="{{userAuth}}">
+      </login-screen>
+      <user-workspace
+        id="stories"
+        user-auth="[[userAuth]]"
+        firebase-routes="[[firebaseRoutes]]"
+        route="{{subroute}}">
+      </user-workspace>
+      <four-oh-four
+        id="four-oh-four">
+      </four-oh-four>
+    </iron-pages>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'polytrack-element',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior
+  ],
+
+  properties: {
+    firebaseName: {
+      type: String,
+      notify: true,
+      reflectToAttribute: true
+    },
+
+    firebaseRoutes: {
+      type: Object,
+      computed: '_computeFirebaseRoutes(firebaseName)'
+    },
+
+    route: {
+      type: String,
+      notify: true,
+      value: 'login'
+    },
+
+    page: {
+      type: String,
+      notify: true,
+      observer: '_onPageChanged'
+    }
+  },
+
+  observers: [
+    '_userAuthChanged(userAuth)'
+  ],
+
+  resetUserData: function() {
+    new Firebase(this.firebaseRoutes.workspaceLocation(this.userAuth.uid)).remove();
+    this.$.login.initializeUserData();
+  },
+
+  _userAuthChanged: function(userAuth) {
+    this.route = 'stories/board';
+  },
+
+  _computeFirebaseRoutes: function(firebaseName) {
+    return new FirebaseRoutes(firebaseName);
+  },
+
+  _onPageChanged: function(page) {
+    var selectedItem = this.$.pages.selectedItem;
+    var selectedPage = selectedItem && selectedItem.id;
+
+    if (!this.userAuth) {
+      this.route = 'login';
+    } else if (!selectedPage) {
+      this.route = 'four-oh-four';
+    } else if (page === 'login') {
+      this.route = 'stories/board';
+    }
+  }
+});
+</script>
