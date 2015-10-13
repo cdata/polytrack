@@ -8,11 +8,19 @@
       display: block;
       position: relative;
       box-sizing: border-box;
+    }
+
+    .card {
+      display: block;
+      position: relative;
+      box-sizing: border-box;
       background-color: #fff;
       padding: 0.5em;
       margin-bottom: 1em;
       border-radius: 2px;
       overflow: hidden;
+      width: 100%;
+      height: 100%;
 
       @apply(--shadow-elevation-2dp);
       @apply(--shadow-transition);
@@ -31,18 +39,20 @@
       overflow: auto;
     }
 
-    :host([disable-text-selection]) {
+    :host([disable-text-selection]) .markdown-html {
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+
+      pointer-events: none;
     }
 
-    :host([selected]) {
+    :host([selected]) .card {
       @apply(--shadow-elevation-8dp);
     }
 
-    :host([focused]:not([selected])) {
+    :host([focused]:not([selected])) .card {
       @apply(--shadow-elevation-4dp);
     }
 
@@ -73,12 +83,14 @@
       data="{{story}}">
     </firebase-document>
 
-    <marked-element markdown="[[story.markdown]]">
-      <div class="markdown-html"></div>
-    </marked-element>
-    <template is="dom-if" if="[[!story.markdown]]">
-      <h4 id="emptyLabel">Empty card...</h4>
-    </template>
+    <section class="card">
+      <marked-element markdown="[[story.markdown]]">
+        <div class="markdown-html"></div>
+      </marked-element>
+      <template is="dom-if" if="[[!story.markdown]]">
+        <h4 id="emptyLabel">Empty card...</h4>
+      </template>
+    </section>
 
   </template>
 </dom-module>
@@ -132,6 +144,11 @@ Polymer({
     draggable: {
       type: Boolean,
       computed: '_computeDraggable(selected)'
+    },
+
+    dormant: {
+      type: Boolean,
+      notify: true
     }
   },
 
@@ -143,6 +160,18 @@ Polymer({
     'double-tap': 'edit',
     'long-press': '_onLongPress',
     'up': '_onUp'
+  },
+
+  get containingColumn() {
+    var node = this;
+    var root;
+
+    while (node && node.is !== 'story-column') {
+      root = Polymer.dom(node).getOwnerRoot();
+      node = root && root.host;
+    }
+
+    return node;
   },
 
   edit: function() {
@@ -158,7 +187,9 @@ Polymer({
   },
 
   _onLongPress: function() {
-    this.selected = true;
+    if (!this.dormant) {
+      this.selected = true;
+    }
   },
 
   _onUp: function() {

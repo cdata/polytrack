@@ -49,13 +49,16 @@
 
       if (event.detail.state === 'start') {
         this._setDragging(true);
+        this._setDragX(0);
+        this._setDragY(0);
         this._setDragOriginRect(this.getBoundingClientRect());
 
         this.fire('drag-start');
       }
 
-      this._setDragX(this.dragX + event.detail.ddx);
-      this._setDragY(this.dragY + event.detail.ddy);
+      event.detail.sourceEvent.preventDefault();
+      this._setDragX(this.dragX + (event.detail.ddx || 0));
+      this._setDragY(this.dragY + (event.detail.ddy || 0));
 
       dropCandidates = [];
 

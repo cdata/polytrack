@@ -39,6 +39,10 @@
       return this.columnsLocation() + '/' + columnId;
     },
 
+    columnCardsLocation: function(columnId) {
+      return this.columnLocation(columnId) + '/cards';
+    },
+
     workspaceColumnsLocation: function(userId) {
       return this.workspaceLocation(userId) + '/columns';
     },

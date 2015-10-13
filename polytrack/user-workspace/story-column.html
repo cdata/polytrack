@@ -21,10 +21,23 @@
     story-card {
       max-height: 300px;
     }
+
+    story-card.preview-drop:before {
+      content: '';
+      display: block;
+      position: relative;
+
+      background-color: var(--paper-light-blue-100);
+      border: 1px solid var(--paper-light-blue-a200);
+
+      width: 100%;
+      height: 1em;
+      margin-top: -0.5em;
+      margin-bottom: 0.5em;
+    }
   </style>
   <template>
     <firebase-document
-      id="firebase"
       location="[[_columnLocation(firebaseRoutes, columnId)]]"
       data="{{column}}">
     </firebase-document>
@@ -32,6 +45,7 @@
     <template is="dom-repeat" items="[[column.cards]]" as="cardId">
       <story-card
         card-id="[[cardId]]"
+        disable-text-selection
         firebase-routes="[[firebaseRoutes]]"
         user-auth="[[userAuth]]">
       </story-card>
@@ -63,8 +77,37 @@ Polymer({
     return Polymer.dom(this.root).querySelector('story-card');
   },
 
+  addCard: function(cardId, beforeCardId) {
+    if (beforeCardId) {
+      this.splice(
+        'column.cards',
+        this.column.cards.indexOf(beforeCardId),
+        0,
+        cardId
+      );
+    } else {
+      if (this.column.cards) {
+        this.push('column.cards', cardId);
+      } else {
+        this.set('column.cards', [cardId]);
+      }
+    }
+  },
+
+  removeCard: function(cardId) {
+    this.splice(
+      'column.cards',
+      this.column.cards.indexOf(cardId),
+      1
+    );
+  },
+
   _columnLocation: function(firebaseRoutes, columnId) {
     return firebaseRoutes.columnLocation(columnId);
+  },
+
+  _cardsLocation: function(firebaseRoutes, columnId) {
+    return firebaseRoutes.columnCardsLocation(columnId);
   }
 });
 </script>

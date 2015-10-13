@@ -6,17 +6,18 @@
   ],
   "license": "3 Clause BSD",
   "dependencies": {
-    "firebase-element": "googlewebcomponents/firebase-element#~1.0.6",
-    "iron-autogrow-textarea": "polymerelements/iron-autogrow-textarea#~1.0.6",
-    "iron-behaviors": "polymerelements/iron-behaviors#~1.0.8",
-    "iron-icon": "polymerelements/iron-icon#~1.0.5",
-    "iron-icons": "polymerelements/iron-icons#~1.0.4",
-    "marked-element": "polymerelements/marked-element#~1.1.1",
-    "neon-animation": "polymerelements/neon-animation#~1.0.6",
-    "paper-button": "polymerelements/paper-button#~1.0.7",
-    "paper-fab": "polymerelements/paper-fab#~1.0.4",
-    "paper-header-panel": "polymerelements/paper-header-panel#~1.0.5",
-    "paper-styles": "polymerelements/paper-styles#~1.0.11",
-    "polymer": "polymer/polymer#~1.1.4"
+    "firebase-element": "googlewebcomponents/firebase-element#^1.0.6",
+    "iron-autogrow-textarea": "polymerelements/iron-autogrow-textarea#^1.0.6",
+    "iron-behaviors": "polymerelements/iron-behaviors#^1.0.8",
+    "iron-icon": "polymerelements/iron-icon#^1.0.5",
+    "iron-icons": "polymerelements/iron-icons#^1.0.4",
+    "iron-pages": "polymerelements/iron-pages#^1.0.0",
+    "marked-element": "polymerelements/marked-element#^1.1.1",
+    "neon-animation": "polymerelements/neon-animation#^1.0.6",
+    "paper-button": "polymerelements/paper-button#^1.0.7",
+    "paper-fab": "polymerelements/paper-fab#^1.0.4",
+    "paper-header-panel": "polymerelements/paper-header-panel#^1.0.5",
+    "paper-styles": "polymerelements/paper-styles#^1.0.11",
+    "polymer": "polymer/polymer#master"
   }
 }

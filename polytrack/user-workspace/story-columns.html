@@ -29,7 +29,7 @@
 
     story-card {
       display: block;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       z-index: 1;
@@ -51,7 +51,8 @@
 
     <story-card
       id="cardProxy"
-      firebase-name="[[firebaseName]]"
+      firebase-routes="[[firebaseRoutes]]"
+      user-auth="[[userAuth]]"
       selected
       disabled-text-selection
       disabled>
@@ -107,7 +108,10 @@ Polymer({
   },
 
   listeners: {
-    'edit-card': '_onEditCard'
+    'edit-card': '_onEditCard',
+    'drag-start': '_onDragStart',
+    'drag-end': '_onDragEnd',
+    'drag': '_onDrag',
   },
 
   get firstColumn () {
@@ -135,15 +139,76 @@ Polymer({
 
     this.async(function() {
       column.firstCard.edit();
-    });
+    }, 1);
+  },
+
+  _onDragStart: function(event) {
+    var card = event.target;
+
+    this.$.cardProxy.cardId = card.cardId;
+    this.$.cardProxy.style.top = card.dragOriginRect.top + 'px';
+    this.$.cardProxy.style.left = card.dragOriginRect.left + 'px';
+    this.$.cardProxy.style.width = card.dragOriginRect.width + 'px';
+    this.$.cardProxy.style.height = card.dragOriginRect.height + 'px';
+
+    this.$.cardProxy.style.opacity = 1;
+    card.style.display = 'none';
+  },
+
+  _onDragEnd: function(event) {
+    var card = event.target;
+
+    this.$.cardProxy.style.opacity = 0;
+    card.style.display = '';
+
+    if (this._lastBeforeCard) {
+      this._lastBeforeCard.classList.remove('preview-drop');
+    }
+  },
+
+  _onDrag: function(event) {
+    var card = event.detail.draggable;
+    var candidates = event.detail.dropCandidates;
+    var beforeCard = this._findCandidate(candidates, 'story-card');
+
+    if (this._lastBeforeCard && this._lastBeforeCard != beforeCard) {
+      this._lastBeforeCard.classList.remove('preview-drop');
+    }
+
+    if (beforeCard) {
+      beforeCard.classList.add('preview-drop');
+    }
+
+    this._lastBeforeCard = beforeCard;
+
+    this.$.cardProxy.style.transform =
+      'translate(' + card.dragX + 'px, ' + card.dragY + 'px)';
   },
 
   _onDrop: function() {
-    console.log('DROP', event.detail.draggable, event.detail.dropCandidates);
+    var card = event.detail.draggable;
+    var candidates = event.detail.dropCandidates;
+    var from = card.containingColumn;
+    var to = this._findCandidate(candidates, 'story-column');
+    var beforeCard = this._findCandidate(candidates, 'story-card');
+
+    from.removeCard(card.cardId);
+
+    this.async(function() {
+      to.addCard(card.cardId, beforeCard && beforeCard.cardId);
+    }, 1);
+
+    console.log('DROP', [card, from], event.detail.dropCandidates);
   },
 
   _onEditCard: function(event) {
     this.sharedElements.card = event.target || this;
+  },
+
+  _findCandidate: function(candidates, is) {
+    return candidates.filter(function(candidate) {
+      return candidate.is === is
+    }).shift();
   }
 })
 </script>
