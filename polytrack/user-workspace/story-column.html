@@ -22,18 +22,23 @@
       max-height: 300px;
     }
 
-    story-card.preview-drop:before {
+    story-card:before {
       content: '';
-      display: block;
-      position: relative;
+      display: none;
+      position: absolute;
 
+      top: -0.66em;
+
+      box-sizing: border-box;
+      width: 100%;
+      height: 0.33em;
+      z-index: 1;
       background-color: var(--paper-light-blue-100);
       border: 1px solid var(--paper-light-blue-a200);
+    }
 
-      width: 100%;
-      height: 1em;
-      margin-top: -0.5em;
-      margin-bottom: 0.5em;
+    story-card.preview-drop:before {
+      display: block;
     }
   </style>
   <template>
