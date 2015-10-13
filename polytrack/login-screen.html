@@ -71,7 +71,6 @@ Polymer({
   },
 
   _attemptLogin: function() {
-    console.log('ATTEMPT')
     this.$.auth.login();
   },
 
@@ -83,8 +82,8 @@ Polymer({
     return firebaseRoutes.host;
   },
 
-  _onAuthError: function() {
-    console.log('Auth error!');
+  _onAuthError: function(event) {
+    console.error('Auth error!', event);
   }
 });
 </script>

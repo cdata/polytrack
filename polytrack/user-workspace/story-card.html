@@ -23,6 +23,10 @@
       user-select: all;
     }
 
+    :host(:focus) {
+      outline: none;
+    }
+
     :host([scrollable]) {
       overflow: auto;
     }
@@ -35,7 +39,11 @@
     }
 
     :host([selected]) {
-      @apply(--shadow-elevation-6dp);
+      @apply(--shadow-elevation-8dp);
+    }
+
+    :host([focused]:not([selected])) {
+      @apply(--shadow-elevation-4dp);
     }
 
     #emptyLabel {
@@ -83,7 +91,8 @@ Polymer({
     Polymer.PolytrackGesturesBehavior,
     Polymer.DraggableBehavior,
     Polymer.DroppableBehavior,
-    Polymer.IronControlState
+    Polymer.IronControlState,
+    Polymer.IronButtonState
   ],
 
   properties: {
@@ -124,6 +133,10 @@ Polymer({
       type: Boolean,
       computed: '_computeDraggable(selected)'
     }
+  },
+
+  hostAttributes: {
+    tabindex: '0'
   },
 
   listeners: {
