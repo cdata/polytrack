@@ -8,19 +8,11 @@
       display: block;
       position: relative;
       box-sizing: border-box;
-    }
-
-    .card {
-      display: block;
-      position: relative;
-      box-sizing: border-box;
       background-color: #fff;
       padding: 0.5em;
       margin-bottom: 1em;
       border-radius: 2px;
       overflow: hidden;
-      width: 100%;
-      height: 100%;
 
       @apply(--shadow-elevation-2dp);
       @apply(--shadow-transition);
@@ -84,14 +76,12 @@
       data="{{story}}">
     </firebase-document>
 
-    <section class="card">
-      <marked-element markdown="[[story.markdown]]">
-        <div class="markdown-html"></div>
-      </marked-element>
-      <template is="dom-if" if="[[!story.markdown]]">
-        <h4 id="emptyLabel">Empty card...</h4>
-      </template>
-    </section>
+    <marked-element markdown="[[story.markdown]]">
+      <div class="markdown-html"></div>
+    </marked-element>
+    <template is="dom-if" if="[[!story.markdown]]">
+      <h4 id="emptyLabel">Empty card...</h4>
+    </template>
 
   </template>
 </dom-module>
