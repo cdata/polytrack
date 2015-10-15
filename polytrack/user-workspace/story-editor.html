@@ -164,13 +164,19 @@ Polymer({
     }
   },
 
+  ready: function() {
+    this.$.textarea.readonly = false;
+  },
+
   close: function() {
     this.fire('editing-finished');
   },
 
   _cardIdChanged: function(cardId, oldCardId) {
     if (cardId) {
-      this.$.textarea.focus();
+      this.async(function() {
+        this.$.textarea.textarea.focus();
+      }, 1);
 
       if (!this.lastCardId) {
         this.lastCardId = cardId;

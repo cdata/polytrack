@@ -72,6 +72,10 @@ Polymer({
   },
 
   _workspaceLocation: function(firebaseRoutes, userAuth) {
+    if (userAuth == null) {
+      return;
+    }
+
     return firebaseRoutes.workspaceLocation(userAuth.uid);
   },
 
