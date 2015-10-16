@@ -4,11 +4,16 @@
 
   function FirebaseRoutes(firebaseName) {
     this.firebaseName = firebaseName;
+    this.dev = /^http:\/\/localhost/.test(window.location.toString());
   }
 
   FirebaseRoutes.prototype = {
+    get version() {
+      return 'v1' + (this.dev ? '-dev' : '');
+    },
+
     get host() {
-      return 'https://' + this.firebaseName + '.firebaseio.com/v1';
+      return 'https://' + this.firebaseName + '.firebaseio.com/' + this.version;
     },
 
     workspaceLocation: function(userId) {
