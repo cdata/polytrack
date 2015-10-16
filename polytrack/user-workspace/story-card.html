@@ -49,12 +49,12 @@
       pointer-events: all;
     }
 
-    :host([selected]) .card {
+    :host([selected]) {
       @apply(--shadow-elevation-8dp);
     }
 
-    :host([focused]:not([selected])) .card {
-      @apply(--shadow-elevation-4dp);
+    :host([focused]:not([selected])) {
+      @apply(--shadow-elevation-6dp);
     }
 
     #emptyLabel {
@@ -90,6 +90,11 @@
       padding: 1px;
       margin: 2px;
       border: 1px solid #eee;
+    }
+
+    .markdown-html ul,
+    .markdown-html ol {
+      padding-left: 1.8em;
     }
 
     .markdown-html h2, h3, h4 {
