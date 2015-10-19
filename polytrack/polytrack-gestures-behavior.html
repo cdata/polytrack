@@ -21,7 +21,7 @@ Polymer.PolytrackGesturesBehavior = {
       this.fire('long-press', {
         sourceEvent: event
       });
-    }, 50);
+    }, 25);
   },
 
   _onUp: function() {
@@ -53,6 +53,6 @@ Polymer.PolytrackGesturesBehavior = {
     if (this._awaitingLongPress != null) {
       this.cancelAsync(this._awaitingLongPress);
     }
-  },
+  }
 };
 </script>

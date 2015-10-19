@@ -208,7 +208,7 @@ Polymer({
 
     this.async(function() {
       to.addCard(card.cardId, beforeCard && beforeCard.cardId);
-    }, 1);
+    });
 
     console.log('DROP', [card, from], event.detail.dropCandidates);
   },
