@@ -157,7 +157,9 @@ Polymer({
 
     card.containingColumn.hideCard(card);
 
-    this.classList.add('dragging');
+    this.async(function() {
+      this.classList.add('dragging');
+    });
   },
 
   _onDragEnd: function(event) {
