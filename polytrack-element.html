@@ -10,8 +10,15 @@
     :host {
       display: block;
       @apply(--layout-fit);
-      background-color: var(--paper-grey-300);
+      background-color: var(--paper-blue-grey-100);
       @apply(--paper-font-common-base);
+
+      --paper-toolbar-background: var(--paper-blue-grey-500);
+      --paper-fab-background: #FF5722;
+    }
+
+    .title {
+      margin-left: 16px !important;
     }
   </style>
   <template>
@@ -21,22 +28,31 @@
       page="{{page}}"
       subroute="{{subroute}}">
     </carbon-router>
-    <iron-pages id="pages" attr-for-selected="id" selected="[[page]]">
-      <login-screen
-        id="login"
-        firebase-routes="[[firebaseRoutes]]"
-        user-auth="{{userAuth}}">
-      </login-screen>
-      <user-workspace
-        id="stories"
-        user-auth="[[userAuth]]"
-        firebase-routes="[[firebaseRoutes]]"
-        route="{{subroute}}">
-      </user-workspace>
-      <four-oh-four
-        id="four-oh-four">
-      </four-oh-four>
-    </iron-pages>
+    <paper-header-panel>
+      <paper-toolbar>
+        <iron-icon icon="icons:polymer"></iron-icon>
+        <iron-icon icon="icons:assessment"></iron-icon>
+        <div class="title">Polytrack</div>
+      </paper-toolbar>
+      <div class="content">
+        <iron-pages id="pages" attr-for-selected="id" selected="[[page]]">
+          <login-screen
+            id="login"
+            firebase-routes="[[firebaseRoutes]]"
+            user-auth="{{userAuth}}">
+          </login-screen>
+          <user-workspace
+            id="stories"
+            user-auth="[[userAuth]]"
+            firebase-routes="[[firebaseRoutes]]"
+            route="{{subroute}}">
+          </user-workspace>
+          <four-oh-four
+            id="four-oh-four">
+          </four-oh-four>
+        </iron-pages>
+      </div>
+    </paper-header-panel>
   </template>
 </dom-module>
 <script>
