@@ -20,26 +20,34 @@
 
     story-card {
       max-height: 300px;
+      transition: transform 300ms;
     }
 
-    story-card:before {
-      content: '';
-      display: none;
+    #cards {
+      display: block;
+      position: relative;
+    }
+
+    #proxies {
       position: absolute;
-
-      top: -0.66em;
-
-      box-sizing: border-box;
+      display: none;
+      overflow: visible;
+      pointer-events: none;
       width: 100%;
-      height: 0.33em;
-      z-index: 1;
-      background-color: var(--paper-light-blue-100);
-      border: 1px solid var(--paper-light-blue-a200);
     }
 
-    story-card.preview-drop:before {
+    #proxies story-card {
+      transition: transform 300ms;
+    }
+
+    :host-context(.dragging) #cards > story-card {
+      opacity: 0 !important;
+    }
+
+    :host-context(.dragging) #proxies {
       display: block;
     }
+
   </style>
   <template>
     <firebase-document
@@ -47,14 +55,31 @@
       data="{{column}}">
     </firebase-document>
     <h1>[[column.name]]</h1>
-    <template is="dom-repeat" items="[[column.cards]]" as="cardId">
-      <story-card
-        card-id="[[cardId]]"
-        disable-text-selection
-        firebase-routes="[[firebaseRoutes]]"
-        user-auth="[[userAuth]]">
-      </story-card>
-    </template>
+
+
+    <div id="cards">
+
+      <div id="proxies">
+        <template is="dom-repeat" items="[[column.cards]]" as="cardId">
+          <story-card
+            card-id="[[cardId]]"
+            disable-text-selection
+            firebase-routes="[[firebaseRoutes]]"
+            user-auth="[[userAuth]]">
+          </story-card>
+        </template>
+      </div>
+
+      <template is="dom-repeat" items="[[column.cards]]" as="cardId">
+        <story-card
+          card-id="[[cardId]]"
+          disable-text-selection
+          firebase-routes="[[firebaseRoutes]]"
+          user-auth="[[userAuth]]">
+        </story-card>
+      </template>
+    </div>
+
   </template>
 </dom-module>
 <script>
@@ -79,7 +104,19 @@ Polymer({
   },
 
   get firstCard() {
-    return Polymer.dom(this.root).querySelector('story-card');
+    return Polymer.dom(this.root).querySelector('#cards > story-card');
+  },
+
+  hideCard: function(card) {
+    Polymer.dom(this.$.cards).querySelectorAll('[card-id="' + card.cardId + '"]').forEach(function(cardToHide) {
+      cardToHide.style.display = 'none';
+    });
+  },
+
+  showHiddenCards: function() {
+    Polymer.dom(this.$.cards).querySelectorAll('[card-id="' + card.cardId + '"]').forEach(function(card) {
+      card.style.display = '';
+    });
   },
 
   addCard: function(cardId, beforeCardId) {
@@ -105,6 +142,30 @@ Polymer({
       this.column.cards.indexOf(cardId),
       1
     );
+  },
+
+  previewDrop: function(card, targetCard) {
+    if (!targetCard) {
+      return;
+    }
+
+    var translateCards = false;
+
+    Polymer.dom(this.$.proxies).querySelectorAll('story-card').forEach(function(cardProxy) {
+      if (targetCard && cardProxy.cardId === targetCard.cardId) {
+        translateCards = true;
+      }
+
+      if (translateCards) {
+        cardProxy.translate3d(0, (card.dragOriginRect.height + 16) + 'px', 0);
+      }
+    });
+  },
+
+  collapseDropPreview: function() {
+    Polymer.dom(this.$.proxies).querySelectorAll('story-card').forEach(function(card) {
+      card.translate3d(0, 0, 0);
+    });
   },
 
   _columnLocation: function(firebaseRoutes, columnId) {

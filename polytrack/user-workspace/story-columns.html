@@ -36,6 +36,10 @@
       opacity: 0;
     }
 
+    :host(.dragging) story-card {
+      opacity: 0.5;
+    }
+
   </style>
   <template>
     <template is="dom-repeat" items="[[columnIds]]" as="columnId">
@@ -151,18 +155,20 @@ Polymer({
     this.$.cardProxy.style.width = card.dragOriginRect.width + 'px';
     this.$.cardProxy.style.height = card.dragOriginRect.height + 'px';
 
-    this.$.cardProxy.style.opacity = 0.5;
-    card.style.display = 'none';
+    card.containingColumn.hideCard(card);
+
+    this.classList.add('dragging');
   },
 
   _onDragEnd: function(event) {
     var card = event.target;
 
-    this.$.cardProxy.style.opacity = 0;
-    card.style.display = '';
+    this.classList.remove('dragging');
+    card.containingColumn.showHiddenCards();
 
     if (this._lastBeforeCard) {
       this._lastBeforeCard.classList.remove('preview-drop');
+      this._lastBeforeCard.containingColumn.collapseDropPreview();
     }
   },
 
@@ -170,9 +176,11 @@ Polymer({
     var card = event.detail.draggable;
     var candidates = event.detail.dropCandidates;
     var beforeCard = this._findCandidate(candidates, 'story-card');
+    var column = this._findCandidate(candidates, 'story-column');
 
     if (this._lastBeforeCard && this._lastBeforeCard != beforeCard) {
       this._lastBeforeCard.classList.remove('preview-drop');
+      this._lastBeforeCard.containingColumn.collapseDropPreview();
     }
 
     if (beforeCard) {
@@ -183,6 +191,8 @@ Polymer({
 
     this.$.cardProxy.style.transform =
       'translate(' + card.dragX + 'px, ' + card.dragY + 'px)';
+
+    column.previewDrop(card, beforeCard);
   },
 
   _onDrop: function() {
@@ -210,5 +220,5 @@ Polymer({
       return candidate.is === is
     }).shift();
   }
-})
+});
 </script>
