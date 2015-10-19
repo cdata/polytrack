@@ -15,10 +15,16 @@
 
       --paper-toolbar-background: var(--paper-blue-grey-500);
       --paper-fab-background: #FF5722;
+      --paper-tabs-selection-bar-color: var(--paper-lime-500);
+      --paper-tab-ink: var(--paper-lime-300);
     }
 
     .title {
       margin-left: 16px !important;
+    }
+
+    paper-tabs {
+      height: 64px;
     }
   </style>
   <template>
@@ -33,6 +39,10 @@
         <iron-icon icon="icons:polymer"></iron-icon>
         <iron-icon icon="icons:assessment"></iron-icon>
         <div class="title">Polytrack</div>
+        <paper-tabs attr-for-selected="id" selected="{{route}}">
+          <paper-tab id="stories/board">Stories</paper-tab>
+          <paper-tab id="review">Review</paper-tab>
+        </paper-tabs>
       </paper-toolbar>
       <div class="content">
         <iron-pages id="pages" attr-for-selected="id" selected="[[page]]">
@@ -47,6 +57,12 @@
             firebase-routes="[[firebaseRoutes]]"
             route="{{subroute}}">
           </user-workspace>
+          <user-review
+            id="review"
+            user-auth="[[userAuth]]"
+            firebase-routes="[[firebaseRoutes]]"
+            route="{{subroute}}">
+          </user-review>
           <four-oh-four
             id="four-oh-four">
           </four-oh-four>
