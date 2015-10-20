@@ -28,6 +28,14 @@
       return this.storiesLocation() + '/' + storyId;
     },
 
+    archiveLocation: function() {
+      return this.host + '/archive';
+    },
+
+    archivedCardsLocation: function() {
+      return this.archiveLocation() + '/cards';
+    },
+
     cardsLocation: function() {
       return this.host + '/cards';
     },

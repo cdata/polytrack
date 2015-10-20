@@ -206,11 +206,23 @@ Polymer({
 
     from.removeCard(card.cardId);
 
+    if (this._isLastColumn(to)) {
+      if (card.card.finished == null) {
+        card.set('card.finished', Date.now());
+      }
+    } else {
+      card.set('card.finished', null);
+    }
+
     this.async(function() {
       to.addCard(card.cardId, beforeCard && beforeCard.cardId);
     });
 
     console.log('DROP', [card, from], event.detail.dropCandidates);
+  },
+
+  _isLastColumn: function(column) {
+    return this.columnIds.indexOf(column.columnId) === (this.columnIds.length - 1);
   },
 
   _onEditCard: function(event) {

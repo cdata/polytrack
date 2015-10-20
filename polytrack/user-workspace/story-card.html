@@ -125,7 +125,6 @@
     <template is="dom-if" if="[[!story.markdown]]">
       <h4 id="emptyLabel">Empty card...</h4>
     </template>
-
   </template>
 </dom-module>
 <script>
@@ -137,6 +136,7 @@ Polymer({
     Polymer.PolytrackGesturesBehavior,
     Polymer.DraggableBehavior,
     Polymer.DroppableBehavior,
+    Polymer.IronA11yKeysBehavior,
     Polymer.IronControlState,
     Polymer.IronButtonState
   ],
@@ -197,6 +197,10 @@ Polymer({
     'up': '_onUp'
   },
 
+  keyBindings: {
+    'shift+a': '_onShiftA'
+  },
+
   created: function() {
     this._observer = null;
   },
@@ -225,6 +229,10 @@ Polymer({
     return node;
   },
 
+  archive: function() {
+    this.fire('archive-card');
+  },
+
   edit: function() {
     this.fire('edit-card');
   },
@@ -246,6 +254,12 @@ Polymer({
   _onUp: function() {
     Polymer.PolytrackGesturesBehavior._onUp.apply(this, arguments);
     this.selected = false;
+  },
+
+  _onShiftA: function() {
+    if (this.focused) {
+      this.archive();
+    }
   },
 
   _computeDraggable: function(selected) {

@@ -68,7 +68,8 @@ Polymer({
 
   listeners: {
     'edit-card': '_onEditCard',
-    'editing-finished': '_onEditingFinished'
+    'editing-finished': '_onEditingFinished',
+    'archive-card': '_onArchiveCard'
   },
 
   _workspaceLocation: function(firebaseRoutes, userAuth) {
@@ -91,6 +92,23 @@ Polymer({
 
   _onEditingFinished: function(event) {
     this.route = 'board';
+  },
+
+  _onArchiveCard: function(event) {
+    var card = Polymer.Gestures.findOriginalTarget(event);
+    var column = card.containingColumn;
+    var cardData = card.card;
+
+    if (!cardData.finished) {
+      cardData.finished = Date.now();
+    }
+
+    console.log('Archiving card', cardData);
+
+    column.splice('column.cards', column.column.cards.indexOf(card.cardId), 1);
+
+    new Firebase(this.firebaseRoutes.cardsLocation()).child(card.cardId).remove();
+    new Firebase(this.firebaseRoutes.archivedCardsLocation()).push(cardData);
   }
 });
 </script>
