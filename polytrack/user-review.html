@@ -1,0 +1,60 @@
+<link rel="import" href="polytrack-element-behavior.html">
+<link rel="import" href="user-review/review-day.html">
+<dom-module id="user-review">
+  <template>
+    <template is="dom-repeat" items="[[dates]]" as="date">
+      <review-day
+        starting="[[date]]"
+        user-auth="[[userAuth]]"
+        firebase-routes="[[firebaseRoutes]]">
+      </review-day>
+    </template>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'user-review',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior
+  ],
+
+  properties: {
+    startTime: {
+      type: Number,
+      notify: true,
+      value: function() {
+        return Date.now();
+      }
+    },
+
+    days: {
+      type: Number,
+      notify: true,
+      value: 7
+    },
+
+    dates: {
+      type: Array,
+      notify: true,
+      computed: '_computeDates(startTime, days)'
+    }
+  },
+
+  _floorTime: function(time) {
+    var date = new Date(time);
+    return +new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  },
+
+  _computeDates: function(startTime, days) {
+    var dates = [];
+    var dayInMs = 1000 * 60 * 60 * 24;
+
+    for (var i = 0; i < days; ++i) {
+      dates.push(this._floorTime(startTime - i * dayInMs));
+    }
+
+    return dates;
+  }
+});
+</script>

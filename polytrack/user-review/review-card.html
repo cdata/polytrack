@@ -1,0 +1,118 @@
+<link rel="import" href="../polytrack-element-behavior.html">
+<dom-module id="review-card">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+      padding: 1em;
+      max-width: 640px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--paper-blue-grey-200);
+    }
+
+    :host(:last-of-type) {
+      border-bottom: none !important;
+      margin-bottom: 1em;
+    }
+
+    .markdown-html {
+      color: var(--paper-blue-grey-700);
+    }
+
+    .markdown-html :first-child {
+      margin-top: 0;
+    }
+
+    .markdown-html :last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-html h1, h2, h3, h4, h5, h6 {
+      margin: 0.25em 0;
+    }
+
+    .markdown-html a {
+      color: var(--google-blue-500);
+    }
+
+    .markdown-html a:hover {
+      color: var(--paper-light-blue-500);
+    }
+
+    .markdown-html code {
+      font-size: 12px;
+      line-height: 16px;
+      background-color: #f5f5f5;
+      border-radius: 2px;
+      padding: 1px;
+      margin: 2px;
+      border: 1px solid #eee;
+    }
+
+    .markdown-html ul,
+    .markdown-html ol {
+      padding-left: 1.8em;
+    }
+
+    .markdown-html h2, h3, h4 {
+      border-bottom: 1px solid var(--paper-grey-300);
+    }
+
+    .markdown-html img {
+      max-width: 100%;
+    }
+  </style>
+  <template>
+    <firebase-document
+      location="[[_storyLocation(firebaseRoutes, card.story, userAuth)]]"
+      data="{{story}}">
+    </firebase-document>
+    <marked-element markdown="[[story.markdown]]">
+      <div id="markdown" class="markdown-html"></div>
+    </marked-element>
+    <template is="dom-if" if="[[!story.markdown]]">
+      <h4 id="emptyLabel">Empty card...</h4>
+    </template>
+  </template>
+</dom-module>
+<script>
+Polymer({
+  is: 'review-card',
+
+  behaviors: [
+    Polymer.PolytrackElementBehavior
+  ],
+
+  properties: {
+    story: {
+      type: Object,
+      notify: true
+    },
+
+    card: {
+      type: Object,
+      notify: true
+    }
+  },
+
+  created: function() {
+    this._observer = null;
+  },
+
+  attached: function() {
+    this._observer = Polymer.dom(this.$.markdown).observeNodes(function() {
+      Polymer.dom(this.$.markdown).querySelectorAll('a').forEach(function(a) {
+        a.target = '_blank';
+      });
+    }.bind(this));
+  },
+
+  detached: function() {
+    Polymer.dom(this.$.markdown).unobserveNodes(this._observer);
+  },
+
+  _storyLocation: function(firebaseRoutes, storyId, userAuth) {
+    return firebaseRoutes.storyLocation(storyId);
+  }
+});
+</script>

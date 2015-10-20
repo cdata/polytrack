@@ -214,7 +214,7 @@ Polymer({
   },
 
   detached: function() {
-    Polymer.dom(this.$.markdown).unobserveNodes();
+    Polymer.dom(this.$.markdown).unobserveNodes(this._observer);
   },
 
   get containingColumn() {
