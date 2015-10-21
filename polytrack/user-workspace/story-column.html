@@ -113,7 +113,7 @@ Polymer({
   },
 
   showHiddenCards: function() {
-    Polymer.dom(this.$.cards).querySelectorAll('[card-id="' + card.cardId + '"]').forEach(function(card) {
+    Polymer.dom(this.$.cards).querySelectorAll('story-card').forEach(function(card) {
       card.style.display = '';
     });
   },

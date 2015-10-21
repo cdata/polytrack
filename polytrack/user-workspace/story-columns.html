@@ -147,7 +147,7 @@ Polymer({
   },
 
   _onDragStart: function(event) {
-    var card = event.target;
+    var card = Polymer.Gestures.findOriginalTarget(event);
 
     this.$.cardProxy.cardId = card.cardId;
     this.$.cardProxy.style.top = card.dragOriginRect.top + 'px';
@@ -163,7 +163,7 @@ Polymer({
   },
 
   _onDragEnd: function(event) {
-    var card = event.target;
+    var card = Polymer.Gestures.findOriginalTarget(event);
 
     this.classList.remove('dragging');
     card.containingColumn.showHiddenCards();

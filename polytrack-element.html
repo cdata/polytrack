@@ -50,7 +50,8 @@
           <login-screen
             id="login"
             firebase-routes="[[firebaseRoutes]]"
-            user-auth="{{userAuth}}">
+            user-auth="{{userAuth}}"
+            on-logout="_onLogout">
           </login-screen>
           <user-workspace
             id="stories"
@@ -94,14 +95,13 @@ Polymer({
 
     route: {
       type: String,
-      notify: true,
-      value: 'login'
+      notify: true
     },
 
     page: {
       type: String,
       notify: true,
-      observer: '_onPageChanged'
+      observer: '_pageChanged'
     }
   },
 
@@ -115,24 +115,32 @@ Polymer({
   },
 
   _userAuthChanged: function(userAuth) {
-    this.route = 'stories/board';
+    if (userAuth &&
+        (this.route === 'login' ||
+         this.route === 'four-oh-four')) {
+      this.route = 'stories/board';
+    }
   },
 
   _computeFirebaseRoutes: function(firebaseName) {
     return new FirebaseRoutes(firebaseName);
   },
 
-  _onPageChanged: function(page) {
+  _pageChanged: function(page) {
     var selectedItem = this.$.pages.selectedItem;
     var selectedPage = selectedItem && selectedItem.id;
 
     if (!this.userAuth) {
-      this.route = 'login';
+      return;
     } else if (!selectedPage) {
       this.route = 'four-oh-four';
     } else if (page === 'login') {
       this.route = 'stories/board';
     }
+  },
+
+  _onLogout: function() {
+    this.route = 'login';
   }
 });
 </script>

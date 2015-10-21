@@ -55,8 +55,7 @@ Polymer({
 
     route: {
       type: String,
-      notify: true,
-      value: 'board'
+      notify: true
     },
 
     page: {
@@ -82,7 +81,7 @@ Polymer({
 
   _pageChanged: function(page) {
     if (!(page in this.$)) {
-      this.route = 'board';
+      this.route = '';
     }
   },
 

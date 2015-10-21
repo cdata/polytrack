@@ -38,7 +38,8 @@
       user="{{userAuth}}"
       provider="github"
       on-user-created="_onUserCreated"
-      on-error="_onAuthError">
+      on-error="_onAuthError"
+      on-status-known-changed="_onStatusKnownChanged">
     </firebase-auth>
     <paper-button on-tap="_attemptLogin">
       <iron-icon size="16" src="../images/github.svg"></iron-icon>
@@ -84,6 +85,12 @@ Polymer({
 
   _onAuthError: function(event) {
     console.error('Auth error!', event);
+  },
+
+  _onStatusKnownChanged: function() {
+    if (this.$.auth.statusKnown && !this.userAuth) {
+      this.fire('logout');
+    }
   }
 });
 </script>

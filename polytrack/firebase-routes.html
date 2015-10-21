@@ -4,7 +4,7 @@
 
   function FirebaseRoutes(firebaseName) {
     this.firebaseName = firebaseName;
-    this.dev = /^http:\/\/localhost/.test(window.location.toString());
+    this.dev = /^http:\/\/(localhost|192|127)/.test(window.location.toString());
   }
 
   FirebaseRoutes.prototype = {
