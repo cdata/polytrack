@@ -68,7 +68,8 @@ Polymer({
   listeners: {
     'edit-card': '_onEditCard',
     'editing-finished': '_onEditingFinished',
-    'archive-card': '_onArchiveCard'
+    'archive-card': '_onArchiveCard',
+    'delete-card': '_onDeleteCard'
   },
 
   _workspaceLocation: function(firebaseRoutes, userAuth) {
@@ -86,7 +87,7 @@ Polymer({
   },
 
   _onEditCard: function(event) {
-    this.route = 'edit/' + event.target.cardId;
+    this.route = 'edit/' + Polymer.Gestures.findOriginalTarget(event).cardId;
   },
 
   _onEditingFinished: function(event) {
@@ -108,6 +109,17 @@ Polymer({
 
     new Firebase(this.firebaseRoutes.cardsLocation()).child(card.cardId).remove();
     new Firebase(this.firebaseRoutes.archivedCardsLocation()).push(cardData);
+  },
+
+  _onDeleteCard: function(event) {
+    var card = Polymer.Gestures.findOriginalTarget(event);
+    var column = card.containingColumn;
+
+    console.log('Deleting card', card.card, card.story);
+
+    column.splice('column.cards', column.column.cards.indexOf(card.cardId), 1);
+    new Firebase(this.firebaseRoutes.storyLocation(card.card.story)).remove();
+    new Firebase(this.firebaseRoutes.cardsLocation()).child(card.cardId).remove();
   }
 });
 </script>

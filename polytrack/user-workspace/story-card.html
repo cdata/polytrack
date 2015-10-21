@@ -203,7 +203,8 @@ Polymer({
   },
 
   keyBindings: {
-    'shift+a': '_onShiftA'
+    'shift+a': '_onShiftA',
+    'shift+d': '_onShiftD'
   },
 
   created: function() {
@@ -238,6 +239,10 @@ Polymer({
     this.fire('archive-card');
   },
 
+  delete: function() {
+    this.fire('delete-card');
+  },
+
   edit: function() {
     this.fire('edit-card');
   },
@@ -264,6 +269,12 @@ Polymer({
   _onShiftA: function() {
     if (this.focused) {
       this.archive();
+    }
+  },
+
+  _onShiftD: function() {
+    if (this.focused) {
+      this.delete();
     }
   },
 
