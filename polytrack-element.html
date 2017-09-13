@@ -37,7 +37,7 @@
     </app-location>
 
     <app-route
-      route="[[route]]"
+      route="{{route}}"
       pattern=":page"
       data="{{data}}"
       tail="{{subroute}}">
@@ -123,10 +123,12 @@ Polymer({
   },
 
   _userAuthChanged: function(userAuth) {
+    console.log(userAuth, this.route.path);
     if (userAuth &&
         (this.route.path === 'login' ||
          this.route.path === 'four-oh-four')) {
-      this.set('route.path', 'stories/board');
+      this.async(() =>
+          this.set('route.path', 'stories/board'), 1);
     }
   },
 
