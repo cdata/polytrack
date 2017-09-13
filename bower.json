@@ -18,6 +18,10 @@
     "paper-fab": "polymerelements/paper-fab#^1.0.4",
     "paper-header-panel": "polymerelements/paper-header-panel#^1.0.5",
     "paper-styles": "polymerelements/paper-styles#^1.0.11",
-    "polymer": "polymer/polymer#master"
+    "app-route": "polymerelements/app-route#<2.0.0",
+    "polymer": "polymer/polymer#<2.0.0",
+    "moment": "moment/moment#^2.18.1",
+    "paper-toolbar": "polymerelements/paper-toolbar#^2.0.0",
+    "paper-tabs": "polymerelements/paper-tabs#^2.0.0"
   }
 }

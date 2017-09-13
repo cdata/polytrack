@@ -33,12 +33,16 @@
     }
   </style>
   <template>
-    <carbon-router
-      route="{{route}}"
-      matches=":page"
-      page="{{page}}"
-      subroute="{{subroute}}">
-    </carbon-router>
+    <app-location route="{{route}}" use-hash-as-path>
+    </app-location>
+
+    <app-route
+      route="[[route]]"
+      pattern=":page"
+      data="{{data}}"
+      tail="{{subroute}}">
+    </app-route>
+
     <paper-header-panel>
       <paper-toolbar>
         <iron-icon icon="icons:polymer"></iron-icon>
@@ -50,7 +54,7 @@
         </paper-tabs>
       </paper-toolbar>
       <div class="content">
-        <iron-pages id="pages" attr-for-selected="id" selected="[[page]]">
+        <iron-pages id="pages" attr-for-selected="id" selected="[[data.page]]">
           <login-screen
             id="login"
             firebase-routes="[[firebaseRoutes]]"
@@ -120,9 +124,9 @@ Polymer({
 
   _userAuthChanged: function(userAuth) {
     if (userAuth &&
-        (this.route === 'login' ||
-         this.route === 'four-oh-four')) {
-      this.route = 'stories/board';
+        (this.route.path === 'login' ||
+         this.route.path === 'four-oh-four')) {
+      this.set('route.path', 'stories/board');
     }
   },
 
@@ -137,14 +141,14 @@ Polymer({
     if (!this.userAuth) {
       return;
     } else if (!selectedPage) {
-      this.route = 'four-oh-four';
+      this.set('route.path', 'four-oh-four');
     } else if (page === 'login') {
-      this.route = 'stories/board';
+      this.set('route.path', 'stories/board');
     }
   },
 
   _onLogout: function() {
-    this.route = 'login';
+    this.set('route.path', 'login');
   }
 });
 </script>

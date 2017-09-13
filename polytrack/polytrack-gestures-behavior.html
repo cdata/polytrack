@@ -41,7 +41,7 @@ Polymer.PolytrackGesturesBehavior = {
 
       this.fire('double-tap', {
         sourceEvent: event
-      });
+      }, { composed: true, bubbles: true });
     } else {
       this._awaitingDoubleTap = this.async(function() {
         this._awaitingDoubleTap = null;

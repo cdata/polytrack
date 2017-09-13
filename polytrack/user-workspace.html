@@ -17,13 +17,18 @@
       location="[[_workspaceLocation(firebaseRoutes, userAuth)]]"
       data="{{workspace}}">
     </firebase-document>
-    <carbon-route
+    <app-route
       route="{{route}}"
-      matches=":page"
-      page="{{page}}"
-      subroute="{{cardId}}">
-    </carbon-route>
-    <neon-animated-pages attr-for-selected="id" selected="[[page]]">
+      pattern="/:page"
+      data="{{routeData}}"
+      tail="{{cardRoute}}">
+    </app-route>
+    <app-route
+      route="{{cardRoute}}"
+      pattern="/:cardId"
+      data="{{cardData}}">
+    </app-route>
+    <neon-animated-pages attr-for-selected="id" selected="[[routeData.page]]">
       <story-columns
         id="board"
         column-ids="[[workspace.columns]]"
@@ -32,7 +37,7 @@
       </story-columns>
       <story-editor
         id="edit"
-        card-id="[[cardId]]"
+        card-id="[[cardData.cardId]]"
         firebase-routes="[[firebaseRoutes]]"
         user-auth="[[userAuth]]">
       </story-editor>
@@ -87,11 +92,11 @@ Polymer({
   },
 
   _onEditCard: function(event) {
-    this.route = 'edit/' + Polymer.Gestures.findOriginalTarget(event).cardId;
+    this.set('route.path', 'edit/' + Polymer.Gestures.findOriginalTarget(event).cardId);
   },
 
   _onEditingFinished: function(event) {
-    this.route = 'board';
+    this.set('route.path', 'board');
   },
 
   _onArchiveCard: function(event) {
